@@ -23,7 +23,7 @@ This repository provides a Python script to download Spotify playlists, top trac
 
 ## Setup and Usage
 
-1. **API Keys:** Replace `client_id`, `client_secret`, and `redirect_uri` with your personal credentials from the Spotify Developer Dashboard.
+1. **API Keys:** Replace `client_id`, `client_secret` with your personal credentials from the Spotify Developer Dashboard.
 
 2. **Install Dependencies:**
 
