@@ -34,12 +34,14 @@ pip install tekore yt_dlp eyed3
 3. **Run Script:**
 
 ```bash
-python script_name.py
+python spotify.py
 ```
 
-Replace `script_name.py` with the name of the Python script if different.
+Replace `spotify.py` with the name of the Python script if different.
 
-4. **Follow On-Screen Prompts:** The script provides a menu-driven interface for various functionalities. Choose the desired operation and follow the on-screen instructions.
+4. **Follow On-Screen Prompts:** 
+Upon your initial launch, a browser window will open, prompting a connection to your Spotify account. Note that this doesn't have to be the same account linked to the API. The script offers a menu-driven interface to navigate its multiple features. Simply select your preferred function and adhere to the displayed guidelines.
+The script then provides a menu-driven interface for various functionalities. Choose the desired operation and follow the on-screen instructions.
 
 ## Security Warning
 
