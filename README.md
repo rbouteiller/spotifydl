@@ -23,9 +23,11 @@ This repository provides a Python script to download Spotify playlists, top trac
 
 ## Setup and Usage
 
-1. **API Keys:** Replace `client_id`, `client_secret` with your personal credentials from the Spotify Developer Dashboard.
+1. **Spotify Developer Dashboard** From the Spotify Developer Dashboard create a new app with redirect url `http://localhost:5000/`
 
-2. **Install Dependencies:**
+3. **API Keys:** Replace `client_id`, `client_secret` with your personal credentials from the new app created.
+
+4. **Install Dependencies:**
 
 ```bash
 pip install tekore yt_dlp eyed3
