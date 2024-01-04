@@ -17,7 +17,7 @@ This repository provides a Python script to download Spotify playlists, top trac
 ## Dependencies
 
 1. `tekore` - For accessing the Spotify API.
-2. `yt_dlp` - For downloading and converting songs from YouTube.
+2. `yt-dlp` - For downloading and converting songs from YouTube.
 3. `eyed3` - For editing ID3 tags (metadata) in the downloaded MP3 files.
 4. `urllib` - For fetching album artwork.
 
@@ -30,7 +30,7 @@ This repository provides a Python script to download Spotify playlists, top trac
 4. **Install Dependencies:**
 
 ```bash
-pip install tekore yt_dlp eyed3
+pip install tekore yt-dlp eyed3
 ```
 
 3. **Run Script:**
