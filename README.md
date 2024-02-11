@@ -1,5 +1,8 @@
 # spotifydl
 
+## Main code is the work of [rbouteiller](https://github.com/rbouteiller)
+
+
 ## Description
 
 This repository provides a Python script to download Spotify playlists, top tracks,liked tracks, recommendations, and search results as MP3 files, leveraging the Spotify and YouTube APIs.
