@@ -1,8 +1,11 @@
 # spotifydl
 
+## Main code is the work of [rbouteiller](https://github.com/rbouteiller)
+
+
 ## Description
 
-This repository provides a Python script to download Spotify playlists, top tracks, recommendations, and search results as MP3 files, leveraging the Spotify and YouTube APIs.
+This repository provides a Python script to download Spotify playlists, top tracks,liked tracks, recommendations, and search results as MP3 files, leveraging the Spotify and YouTube APIs.
 
 ## Features
 
@@ -10,9 +13,10 @@ This repository provides a Python script to download Spotify playlists, top trac
 2. Download recommended songs based on a Spotify playlist.
 3. Download your top tracks from Spotify.
 4. Download recommendations based on your top tracks.
-5. Create new Spotify playlists from recommendations or top tracks.
-6. Search for tracks, artists, albums, and download songs from the search results.
-7. Set the preferred quality of downloaded songs (190kbps or 320kbps).
+5. Download liked(saved) tracks from your profile.
+6. Create new Spotify playlists from recommendations or top tracks.
+7. Search for tracks, artists, albums, and download songs from the search results.
+8. Set the preferred quality of downloaded songs (190kbps or 320kbps).
 
 ## Dependencies
 
@@ -26,8 +30,9 @@ This repository provides a Python script to download Spotify playlists, top trac
 1. **Spotify Developer Dashboard** From the Spotify Developer Dashboard create a new app with redirect url `http://localhost:5000/`
 
 3. **API Keys:** Replace `client_id`, `client_secret` with your personal credentials from the new app created.
+4. **FFMEG Location:** Replace `YOUR_FFMEG_LOCATION_HERE` with your ffmeg.exe location( modified because requesting the exe location in code caused a bunch of issues for me)
 
-4. **Install Dependencies:**
+5. **Install Dependencies:**
 
 ```bash
 pip install tekore yt-dlp eyed3

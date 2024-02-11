@@ -8,8 +8,8 @@ import urllib
 # import vlc
 
 # Spotify API
-client_id = ''
-client_secret = ''
+client_id = 'YOUR_CLIENT_ID_HERE'
+client_secret = 'YOUR_CLIENT_SECRET_HERE'
 
 redirect_uri = 'http://localhost:5000/'
 
@@ -52,10 +52,11 @@ def my_hook(d):
         print('Done downloading, now converting ...')
 
 ydl_opts = {
+    'ffmpeg_location': 'YOUR_FFMEG_LOCATION_HERE',
     'format': 'bestaudio/best',
-    'extractaudio':True,
+    'extractaudio': True,
     'outtmpl': '%(title)s.%(ext)s',
-    'addmetadata':True,
+    'addmetadata': True,
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
@@ -64,6 +65,7 @@ ydl_opts = {
     'logger': MyLogger(),
     # 'progress_hooks': [my_hook],
 }
+
 
 def get_yt_track_url(track):
     # Get youtube url of song
@@ -77,17 +79,18 @@ def get_yt_track_url(track):
         except:
             return None
 
-def songs_downloader(folder ,tracks):
+def songs_downloader(folder, tracks):
     # Download songs
-    for i,track in enumerate(tracks):
+    for i, track in enumerate(tracks):
         print("Tracks downloaded: " + str(i) + "/" + str(len(tracks)))
         song = track.name
         artist = track.artists[0].name
         album = track.album.name
-        # remove special characters
+        # Remove special characters
         song = song.replace('/', '')
         artist = artist.replace('/', '')
         album = album.replace('/', '')
+        album = album.replace(':', '_')  # Replace colon with underscore
 
         print('Downloading: ' + song + ' by ' + artist)
         ydl_opts['outtmpl'] = artist + ' - ' + song + '.%(ext)s'
@@ -96,14 +99,14 @@ def songs_downloader(folder ,tracks):
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download(['ytsearch1:' + song + ' ' + artist])
 
-                #If song is not downloaded, skip
+                # If song is not downloaded, skip
                 if not os.path.exists(artist + ' - ' + song + '.mp3'):
                     continue
                 # Add metadata
                 audiofile = eyed3.load(artist + ' - ' + song + '.mp3')
                 audiofile.tag.artist = artist
                 audiofile.tag.title = song
-                audiofile.tag.album = track.album.name
+                audiofile.tag.album = album
                 audiofile.tag.album_artist = track.album.artists[0].name
                 # Get the artist's genre
                 # Get standard genre from eyed3
@@ -111,11 +114,11 @@ def songs_downloader(folder ,tracks):
                 if spotify.artist(artist_id).genres:
                     audiofile.tag.genre = spotify.artist(artist_id).genres[-1]
                 audiofile.tag.track_num = track.track_number
-                # open image url and save to audiofile
+                # Open image url and save to audiofile
                 imagedata = urllib.request.urlopen(track.album.images[0].url).read()
                 audiofile.tag.images.set(3, imagedata, 'image/jpeg')
                 audiofile.tag.save()
-                
+
                 # Move songs to folder by artist and album
                 if not os.path.exists(folder):
                     os.mkdir(folder)
@@ -127,6 +130,7 @@ def songs_downloader(folder ,tracks):
                 os.rename(file, folder + '/' + artist + '/' + album + '/' + file)
         else:
             print('Already downloaded')
+
 
 
 print("Logged in as " + spotify.current_user().email)
@@ -161,7 +165,17 @@ def get_playlist_tracks(playlist):
         results = spotify.next(results)
         tracks.extend(results.items)
     return tracks
+def list_liked_songs():
+    liked_songs = []
+    results = spotify.saved_tracks()
+    liked_songs.extend(results.items)
+    while results.next:
+        results = spotify.next(results)
+        liked_songs.extend(results.items)
+    return liked_songs
 
+
+    
 def get_recommendations(tracks):
     track_ids = [t.track.id for t in tracks]
     recommendations = spotify.recommendations(track_ids=track_ids).tracks
@@ -197,7 +211,9 @@ def menu():
     print("9. Exit")
     print("Extra options:")
     print("10. Choose quality of songs")
+    print("11. Download liked songs")  # New option for downloading liked songs
     return int(input("Enter option: "))
+
 
 def playlist_tracks_to_tracks(playlist_tracks):
     tracks = []
@@ -325,6 +341,15 @@ def main():
             exit()
         elif action == 10:
             choose_quality()
+        elif action == 11:  # New action for downloading liked songs
+            liked_songs = list_liked_songs()
+            liked_tracks = [item.track for item in liked_songs]
+            songs_downloader("Liked songs", liked_tracks)
+
+
+
+
+           
 
 import time
 import sys
