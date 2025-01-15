@@ -82,52 +82,71 @@ def get_yt_track_url(track):
 def songs_downloader(folder, tracks):
     # Download songs
     for i, track in enumerate(tracks):
-        print("Tracks downloaded: " + str(i) + "/" + str(len(tracks)))
+        print(f"Tracks downloaded: {i}/{len(tracks)}")
         song = track.name
         artist = track.artists[0].name
         album = track.album.name
-        # Remove special characters
-        song = song.replace('/', '')
-        artist = artist.replace('/', '')
-        album = album.replace('/', '')
-        album = album.replace(':', '_')  # Replace colon with underscore
 
-        print('Downloading: ' + song + ' by ' + artist)
-        ydl_opts['outtmpl'] = artist + ' - ' + song + '.%(ext)s'
+        # Sanitize names
+        song = sanitize_filename(song)
+        artist = sanitize_filename(artist)
+        album = sanitize_filename(album)
+
+        print(f'Downloading: {song} by {artist}')
+        ydl_opts['outtmpl'] = f'{artist} - {song}.%(ext)s'
+
+        # Build the destination path
+        destination_path = os.path.join(folder, artist, album)
+        file_name = f'{artist} - {song}.mp3'
+        full_destination = os.path.join(destination_path, file_name)
+
         # Download song if not already downloaded
-        if not os.path.exists(folder + '/' + artist + '/' + album + '/' + artist + ' - ' + song + '.mp3'):
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download(['ytsearch1:' + song + ' ' + artist])
+        if not os.path.exists(full_destination):
+            try:
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([f'ytsearch1:{song} {artist}'])
 
                 # If song is not downloaded, skip
-                if not os.path.exists(artist + ' - ' + song + '.mp3'):
+                if not os.path.exists(file_name):
+                    print(f'Failed to download {file_name}')
                     continue
+
                 # Add metadata
-                audiofile = eyed3.load(artist + ' - ' + song + '.mp3')
+                audiofile = eyed3.load(file_name)
+                if audiofile.tag is None:
+                    audiofile.initTag()
                 audiofile.tag.artist = artist
                 audiofile.tag.title = song
                 audiofile.tag.album = album
                 audiofile.tag.album_artist = track.album.artists[0].name
+
                 # Get the artist's genre
-                # Get standard genre from eyed3
                 artist_id = track.artists[0].id
-                if spotify.artist(artist_id).genres:
-                    audiofile.tag.genre = spotify.artist(artist_id).genres[-1]
+                genres = spotify.artist(artist_id).genres
+                if genres:
+                    audiofile.tag.genre = genres[-1]
                 audiofile.tag.track_num = track.track_number
-                # Open image url and save to audiofile
+
+                # Add album art
                 imagedata = urllib.request.urlopen(track.album.images[0].url).read()
                 audiofile.tag.images.set(3, imagedata, 'image/jpeg')
                 audiofile.tag.save()
 
-                # Move songs to folder by artist and album
-                if not os.path.exists(folder):
-                    os.mkdir(folder)
-                if not os.path.exists(folder + '/' + artist):
-                    os.mkdir(folder + '/' + artist)
-                if not os.path.exists(folder + '/' + artist + '/' + album):
-                    os.mkdir(folder + '/' + artist + '/' + album)
-                file = artist + ' - ' + song + '.mp3'
-                os.rename(file, folder + '/' + artist + '/' + album + '/' + file)
+                # Create destination directories
+                os.makedirs(destination_path, exist_ok=True)
+
+                # Move song to destination folder
+                try:
+                    os.rename(file_name, full_destination)
+                    print(f'Moved {file_name} to {full_destination}')
+                except Exception as e:
+                    print(f'Error moving file: {e}')
+            except youtube_dl.utils.DownloadError as e:
+                print(f"Error downloading '{song}' by '{artist}': {e}. Skipping this song.")
+                continue
+            except Exception as e:
+                print(f"An unexpected error occurred while downloading '{song}' by '{artist}': {e}. Skipping this song.")
+                continue
         else:
             print('Already downloaded')
 
